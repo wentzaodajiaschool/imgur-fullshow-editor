@@ -209,7 +209,7 @@
         function updateUrl() {
             const title = document.getElementById('title').value;
             const date = document.getElementById('date').value.replace(/-/g, '');
-            let url = `https://wentzaodajiaschool.github.io/imgur-fullshow/?title=${encodeURIComponent(title)}&date=${date}`;
+            let url = `https://news.wentzao.com/?title=${encodeURIComponent(title)}&date=${date}`;
             if (imageIds.length > 0) {
                 url += `&id=${imageIds.join(',')}`;
             }
