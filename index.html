@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公告編輯器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .img-container {
+            position: relative;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            line-height: 25px;
+            cursor: pointer;
+        }
+        .url-display {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 標題輸入框 -->
+        <div class="row mb-3">
+            <div class="col-lg">
+                <label for="title" class="form-label">標題</label>
+                <input type="text" class="form-control form-control-lg" id="title">
+            </div>
+        </div>
+        <!-- 日期選擇框 -->
+        <div class="row mb-3">
+            <div class="col-lg">
+                <label for="date" class="form-label">日期</label>
+                <input type="date" class="form-control form-control-lg" id="date" value="">
+            </div>
+        </div>
+        <!-- 上傳圖片按鈕 -->
+        <div class="row mb-3">
+            <div class="col-lg">
+                <label for="upload" class="form-label">上傳圖片</label>
+                <input type="file" class="form-control form-control-lg" id="upload" accept="image/*">
+                <div id="imageList" class="mt-3"></div>
+            </div>
+        </div>
+        <!-- URL拼接顯示 -->
+        <div class="row mb-3">
+            <div class="col-lg">
+                <label for="url" class="form-label">生成的URL</label>
+                <div class="d-flex">
+                    <input type="text" class="form-control form-control-lg" id="url" readonly>
+                    <button class="btn btn-primary ms-2" onclick="copyToClipboard()">複製URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 當DOM內容加載完成後執行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 設置日期輸入框的默認值為今天的日期
+            document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+
+            // 當用戶選擇文件時，觸發圖片上傳
+            document.getElementById('upload').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    uploadImageToImgur(file);
+                }
+            });
+
+            // 當標題或日期輸入框的內容改變時，更新URL
+            document.getElementById('title').addEventListener('input', updateUrl);
+            document.getElementById('date').addEventListener('input', updateUrl);
+        });
+
+        // 保存已上傳圖片的ID
+        let imageIds = [];
+
+        // 上傳圖片到Imgur
+        function uploadImageToImgur(file) {
+            // 顯示上傳中的狀態
+            const saveStatus = document.createElement('div');
+            saveStatus.classList.add('saveStatus');
+            saveStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上傳中...';
+            document.getElementById('imageList').appendChild(saveStatus);
+
+            const clientId = "a0a92307b538c2f";
+            const formData = new FormData();
+            formData.append("image", file);
+
+            fetch("https://api.imgur.com/3/image", {
+                method: "POST",
+                headers: {
+                    Authorization: "Client-ID " + clientId,
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // 成功上傳後保存圖片ID並顯示圖片
+                    imageIds.push(result.data.id);
+                    const imgContainer = document.createElement('div');
+                    imgContainer.classList.add('img-container');
+                    const img = document.createElement('img');
+                    img.src = result.data.link;
+                    img.classList.add('image-preview');
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.classList.add('delete-btn');
+                    deleteBtn.innerHTML = '&times;';
+                    deleteBtn.onclick = () => {
+                        const index = imageIds.indexOf(result.data.id);
+                        if (index > -1) {
+                            imageIds.splice(index, 1);
+                        }
+                        imgContainer.remove();
+                        updateUrl();
+                    };
+                    imgContainer.appendChild(img);
+                    imgContainer.appendChild(deleteBtn);
+                    document.getElementById('imageList').appendChild(imgContainer);
+                } else {
+                    alert("圖片上傳失敗，請重試！");
+                }
+                saveStatus.remove();
+                updateUrl();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                saveStatus.innerHTML = "上傳失敗";
+            });
+        }
+
+        // 更新拼接的URL
+        function updateUrl() {
+            const title = document.getElementById('title').value;
+            const date = document.getElementById('date').value.replace(/-/g, '');
+            let url = `https://wentzaodajiaschool.github.io/imgur-fullshow-editor/?title=${encodeURIComponent(title)}&date=${date}`;
+            if (imageIds.length > 0) {
+                url += `&id=${imageIds.join(',')}`;
+            }
+            document.getElementById('url').value = url;
+        }
+
+        // 複製URL到剪貼簿
+        function copyToClipboard() {
+            const url = document.getElementById('url').value;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL已複製到剪貼簿！');
+            });
+        }
+    </script>
+</body>
+</html>
