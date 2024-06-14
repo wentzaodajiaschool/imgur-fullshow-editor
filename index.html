@@ -12,7 +12,9 @@
             font-family: 'GenSenRounded';
             src: url('GenSenRounded-R.otf') format('opentype');
         }
-        html, body {
+
+        html,
+        body {
             font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
             padding: 20px;
             background-color: #f8f9fa;
@@ -76,10 +78,12 @@
             .container {
                 max-width: 100%;
             }
+
             .copy-btn {
                 width: 100%;
             }
         }
+
         @media (min-width: 768px) {
             .copy-btn {
                 width: 30%;
@@ -131,10 +135,8 @@
     <script>
         // 當DOM內容加載完成後執行
         document.addEventListener('DOMContentLoaded', function () {
-            // 設置日期輸入框的默認值為今天的日期
             document.getElementById('date').value = new Date().toISOString().slice(0, 10);
 
-            // 當用戶選擇文件時，觸發圖片上傳
             document.getElementById('upload').addEventListener('change', function (event) {
                 const file = event.target.files[0];
                 if (file) {
@@ -142,17 +144,13 @@
                 }
             });
 
-            // 當標題或日期輸入框的內容改變時，更新URL
             document.getElementById('title').addEventListener('input', updateUrl);
             document.getElementById('date').addEventListener('input', updateUrl);
         });
 
-        // 保存已上傳圖片的ID
         let imageIds = [];
 
-        // 上傳圖片到Imgur
         function uploadImageToImgur(file) {
-            // 顯示上傳中的狀態
             const saveStatus = document.createElement('div');
             saveStatus.classList.add('saveStatus');
             saveStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上傳中...';
@@ -172,7 +170,6 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.success) {
-                        // 成功上傳後保存圖片ID並顯示圖片
                         imageIds.push(result.data.id);
                         const imgContainer = document.createElement('div');
                         imgContainer.classList.add('img-container', 'col-12', 'col-lg-4', 'col-md-6');
@@ -205,18 +202,17 @@
                 });
         }
 
-        // 更新拼接的URL
         function updateUrl() {
             const title = document.getElementById('title').value;
             const date = document.getElementById('date').value.replace(/-/g, '');
-            let url = `https://news.wentzao.com/?title=${encodeURIComponent(title)}&date=${date}`;
+            let url = `title=${encodeURIComponent(title)}&date=${date}`;
             if (imageIds.length > 0) {
                 url += `&id=${imageIds.join(',')}`;
             }
-            document.getElementById('url').value = url;
+            const encodedUrl = btoa(url); // 使用Base64編碼
+            document.getElementById('url').value = `https://news.wentzao.com/?data=${encodedUrl}`;
         }
 
-        // 複製URL到剪貼簿
         function copyToClipboard() {
             const url = document.getElementById('url').value;
             navigator.clipboard.writeText(url).then(() => {
