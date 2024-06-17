@@ -80,13 +80,13 @@
             }
 
             .copy-btn {
-                width: 100%;
+                width: 15%;
             }
         }
 
         @media (min-width: 768px) {
             .copy-btn {
-                width: 30%;
+                width: 8%;
                 margin-left: auto;
             }
         }
@@ -115,21 +115,32 @@
                 <div id="imageList" class="row mt-3"></div>
             </div>
         </div>
+
+
+
+
         <!-- URL拼接顯示 -->
         <div class="row mb-3">
-            <div class="col-lg">
-                <label for="url" class="form-label">公告網址</label>
+            <label for="url" class="form-label">公告網址</label>
+            <div class="input-group mb-3">
                 <input type="text" class="form-control form-control-lg" id="url" readonly>
-            </div>
-        </div>
-        <!-- 複製按鈕 -->
-        <div class="row mb-3">
-            <div class="col-lg">
                 <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard()">
-                    <i class="fas fa-copy"></i> 複製網址
+                    <i class="fas fa-copy"></i>
                 </button>
             </div>
         </div>
+
+        <!-- URL拼接顯示 -->
+        <div class="row mb-3">
+            <label for="url" class="form-label">LINE圖文網址</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
+                <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
@@ -211,10 +222,18 @@
             }
             const compressedUrl = LZString.compressToEncodedURIComponent(url); // 使用LZString壓縮並編碼
             document.getElementById('url').value = `https://news.wentzao.com/?data=${compressedUrl}`;
+            document.getElementById('lineurl').value = `https://liff.line.me/1660786685-j636WZpM?data=${compressedUrl}`;
         }
 
         function copyToClipboard() {
             const url = document.getElementById('url').value;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('網址已複製！');
+            });
+        }
+
+        function copyToClipboard2() {
+            const url = document.getElementById('lineurl').value;
             navigator.clipboard.writeText(url).then(() => {
                 alert('網址已複製！');
             });
