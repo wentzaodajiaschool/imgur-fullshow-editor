@@ -96,7 +96,7 @@
         }
 
         #previewSection {
-            width: 100%;
+            width: 50%;
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 15px;
@@ -360,8 +360,18 @@
         function updateScale() {
             const scale = document.getElementById('scale').value;
             const previewIframe = document.getElementById('previewIframe');
+            const previewSection = document.getElementById('previewSection');
             previewIframe.style.transform = `scale(${scale})`;
             previewIframe.style.width = `${100 / scale}%`;
+
+            if (scale === '1') {
+                previewSection.style.width = '50%';
+            } else if (scale === '0.75') {
+                previewSection.style.width = '75%';
+            } else {
+                previewSection.style.width = '100%';
+            }
+
             updatePreview()
         }
 
