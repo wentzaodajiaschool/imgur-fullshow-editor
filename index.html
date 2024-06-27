@@ -107,6 +107,29 @@
                 <input type="date" class="form-control form-control-lg" id="date" value="">
             </div>
         </div>
+        <!-- 主顏色和副顏色輸入框 -->
+        <div class="row mb-3">
+            <div class="col-lg-6 mb-3">
+                <label for="primaryColor" class="form-label">主顏色</label>
+                <input type="text" class="form-control form-control-lg" id="primaryColor" placeholder="#2D3E2F">
+            </div>
+            <div class="col-lg-6">
+                <label for="secondaryColor" class="form-label">副顏色</label>
+                <input type="text" class="form-control form-control-lg" id="secondaryColor" placeholder="#dfecdb">
+            </div>
+        </div>
+        <!-- 一列幾張圖下拉選單 -->
+        <div class="row mb-3">
+            <div class="col-lg">
+                <label for="imageCount" class="form-label">一列幾張圖？</label>
+                <select class="form-control form-control-lg" id="imageCount">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+        </div>
         <!-- 上傳圖片按鈕 -->
         <div class="row mb-3">
             <div class="col-lg">
@@ -115,9 +138,6 @@
                 <div id="imageList" class="row mt-3"></div>
             </div>
         </div>
-
-
-
 
         <!-- URL拼接顯示 -->
         <div class="row mb-3">
@@ -132,7 +152,7 @@
 
         <!-- URL拼接顯示 -->
         <div class="row mb-3">
-            <label for="url" class="form-label">LINE圖文網址</label>
+            <label for="lineurl" class="form-label">LINE圖文網址</label>
             <div class="input-group mb-3">
                 <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
                 <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
@@ -157,6 +177,9 @@
 
             document.getElementById('title').addEventListener('input', updateUrl);
             document.getElementById('date').addEventListener('input', updateUrl);
+            document.getElementById('primaryColor').addEventListener('input', updateUrl);
+            document.getElementById('secondaryColor').addEventListener('input', updateUrl);
+            document.getElementById('imageCount').addEventListener('input', updateUrl);
         });
 
         let imageIds = [];
@@ -216,7 +239,11 @@
         function updateUrl() {
             const title = document.getElementById('title').value;
             const date = document.getElementById('date').value.replace(/-/g, '');
-            let url = `title=${encodeURIComponent(title)}&date=${date}`;
+            const primaryColor = document.getElementById('primaryColor').value || '#2D3E2F';
+            const secondaryColor = document.getElementById('secondaryColor').value || '#dfecdb';
+            const imageCount = document.getElementById('imageCount').value;
+            
+            let url = `title=${encodeURIComponent(title)}&date=${date}&primaryColor=${encodeURIComponent(primaryColor)}&secondaryColor=${encodeURIComponent(secondaryColor)}&imageCount=${imageCount}`;
             if (imageIds.length > 0) {
                 url += `&id=${imageIds.join(',')}`;
             }
