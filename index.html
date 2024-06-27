@@ -82,11 +82,28 @@
             text-align: center;
             cursor: pointer;
         }
-        #primaryColorPreview{
+
+        #primaryColorPreview {
             background-color: #2D3E2F;
         }
-        #secondaryColorPreview{
+
+        #secondaryColorPreview {
             background-color: #DFECDB;
+        }
+
+        #editorSection,
+        #previewSection {
+            transition: all 0.5s;
+        }
+
+        #previewSection {
+            display: none;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
         }
 
         @media (max-width: 767px) {
@@ -97,6 +114,18 @@
             .copy-btn {
                 width: 15%;
             }
+
+            #previewSection {
+                display: block;
+                width: 100%;
+                height: 50vh;
+                margin-top: 20px;
+            }
+
+            #editorSection {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
 
         @media (min-width: 768px) {
@@ -104,12 +133,23 @@
                 width: 8%;
                 margin-left: auto;
             }
+
+            #previewSection {
+                display: block;
+                width: 45%;
+                height: 100vh;
+                margin-left: 5%;
+            }
+
+            #editorSection {
+                width: 45%;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <div id="editorSection" class="container">
         <h2 class="mb-4">圖片公告編輯器</h2>
         <!-- 標題輸入框 -->
         <div class="row mb-3">
@@ -178,7 +218,11 @@
                 </button>
             </div>
         </div>
+    </div>
 
+    <div id="previewSection">
+        <button class="btn btn-primary toggle-btn" onclick="togglePreview()">切換預覽位置</button>
+        <iframe id="previewIframe" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
@@ -293,6 +337,13 @@
             const compressedUrl = LZString.compressToEncodedURIComponent(url); // 使用LZString壓縮並編碼
             document.getElementById('url').value = `https://news.wentzao.com/?data=${compressedUrl}`;
             document.getElementById('lineurl').value = `https://liff.line.me/1660786685-j636WZpM?data=${compressedUrl}`;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const previewIframe = document.getElementById('previewIframe');
+            const previewUrl = document.getElementById('url').value;
+            previewIframe.src = previewUrl;
         }
 
         function copyToClipboard() {
@@ -307,6 +358,28 @@
             navigator.clipboard.writeText(url).then(() => {
                 alert('網址已複製！');
             });
+        }
+
+        function togglePreview() {
+            const editorSection = document.getElementById('editorSection');
+            const previewSection = document.getElementById('previewSection');
+            const isPreviewOnRight = previewSection.style.float === 'right';
+            
+            if (isPreviewOnRight) {
+                previewSection.style.float = 'none';
+                previewSection.style.width = '100%';
+                previewSection.style.height = '50vh';
+                previewSection.style.marginLeft = '0';
+                editorSection.style.width = '100%';
+                editorSection.style.marginBottom = '20px';
+            } else {
+                previewSection.style.float = 'right';
+                previewSection.style.width = '45%';
+                previewSection.style.height = '100vh';
+                previewSection.style.marginLeft = '5%';
+                editorSection.style.width = '45%';
+                editorSection.style.marginBottom = '0';
+            }
         }
     </script>
 </body>
