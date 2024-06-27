@@ -333,7 +333,9 @@
 
         function setIframeHeight(iframe) {
             const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-            iframe.style.height = iframeDocument.body.scrollHeight + 'px';
+            const iframeHeight = iframeDocument.body.scrollHeight;
+            console.log('Iframe Height:', iframeHeight); // 調試訊息
+            iframe.style.height = iframeHeight + 'px';
         }
 
         function copyToClipboard() {
