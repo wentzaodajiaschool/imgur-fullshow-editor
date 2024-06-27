@@ -180,26 +180,25 @@
 
         <!-- URL拼接顯示 -->
         <div class="row mb-3">
-            <div class="col-lg-6">
-                <label for="url" class="form-label">公告網址</label>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control form-control-lg" id="url" readonly>
-                    <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard()">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <label for="lineurl" class="form-label">LINE圖文網址</label>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
-                    <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
+            <label for="url" class="form-label">公告網址</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-lg" id="url" readonly>
+                <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard()">
+                    <i class="fas fa-copy"></i>
+                </button>
             </div>
         </div>
-        <h2 class="mb-4">網頁呈現預覽</h2>
+
+        <!-- URL拼接顯示 -->
+        <div class="row mb-3">
+            <label for="lineurl" class="form-label">LINE圖文網址</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
+                <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="previewSection">
@@ -330,7 +329,6 @@
                 previewIframe.style.height = iframeHeight + 'px';
             };
         }
-
 
         function copyToClipboard() {
             const url = document.getElementById('url').value;
