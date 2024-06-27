@@ -54,6 +54,15 @@
             cursor: pointer;
         }
 
+        .color-preview {
+            width: 20px;
+            height: 38px;
+            display: inline-block;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
         .url-display {
             margin-top: 20px;
             padding: 10px;
@@ -72,6 +81,12 @@
             color: white;
             text-align: center;
             cursor: pointer;
+        }
+        #primaryColorPreview{
+            background-color: #2D3E2F;
+        }
+        #secondaryColorPreview{
+            background-color: #DFECDB;
         }
 
         @media (max-width: 767px) {
@@ -109,18 +124,21 @@
         </div>
         <!-- 主顏色和副顏色輸入框 -->
         <div class="row mb-3">
-            <div class="col-lg-6 mb-3">
+            <div class="col-lg-4 mb-3">
                 <label for="primaryColor" class="form-label">主顏色</label>
-                <input type="text" class="form-control form-control-lg" id="primaryColor" placeholder="#2D3E2F">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" id="primaryColor" placeholder="#2D3E2F">
+                    <div id="primaryColorPreview" class="color-preview"></div>
+                </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-4">
                 <label for="secondaryColor" class="form-label">副顏色</label>
-                <input type="text" class="form-control form-control-lg" id="secondaryColor" placeholder="#dfecdb">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" id="secondaryColor" placeholder="#dfecdb">
+                    <div id="secondaryColorPreview" class="color-preview"></div>
+                </div>
             </div>
-        </div>
-        <!-- 一列幾張圖下拉選單 -->
-        <div class="row mb-3">
-            <div class="col-lg">
+            <div class="col-lg-4">
                 <label for="imageCount" class="form-label">一列幾張圖？</label>
                 <select class="form-control form-control-lg" id="imageCount">
                     <option value="1">1</option>
@@ -177,9 +195,12 @@
 
             document.getElementById('title').addEventListener('input', updateUrl);
             document.getElementById('date').addEventListener('input', updateUrl);
-            document.getElementById('primaryColor').addEventListener('input', updateUrl);
-            document.getElementById('secondaryColor').addEventListener('input', updateUrl);
+            document.getElementById('primaryColor').addEventListener('input', updatePrimaryColor);
+            document.getElementById('secondaryColor').addEventListener('input', updateSecondaryColor);
             document.getElementById('imageCount').addEventListener('input', updateUrl);
+
+            updatePrimaryColor();
+            updateSecondaryColor();
         });
 
         let imageIds = [];
@@ -236,13 +257,35 @@
                 });
         }
 
+        function updatePrimaryColor() {
+            const primaryColorInput = document.getElementById('primaryColor');
+            let primaryColor = primaryColorInput.value;
+            if (primaryColor && !primaryColor.startsWith('#')) {
+                primaryColor = '#' + primaryColor;
+            }
+            document.getElementById('primaryColorPreview').style.backgroundColor = primaryColor;
+            primaryColorInput.value = primaryColor;
+            updateUrl();
+        }
+
+        function updateSecondaryColor() {
+            const secondaryColorInput = document.getElementById('secondaryColor');
+            let secondaryColor = secondaryColorInput.value;
+            if (secondaryColor && !secondaryColor.startsWith('#')) {
+                secondaryColor = '#' + secondaryColor;
+            }
+            document.getElementById('secondaryColorPreview').style.backgroundColor = secondaryColor;
+            secondaryColorInput.value = secondaryColor;
+            updateUrl();
+        }
+
         function updateUrl() {
             const title = document.getElementById('title').value;
             const date = document.getElementById('date').value.replace(/-/g, '');
             const primaryColor = document.getElementById('primaryColor').value || '#2D3E2F';
             const secondaryColor = document.getElementById('secondaryColor').value || '#dfecdb';
             const imageCount = document.getElementById('imageCount').value;
-            
+
             let url = `title=${encodeURIComponent(title)}&date=${date}&primaryColor=${encodeURIComponent(primaryColor)}&secondaryColor=${encodeURIComponent(secondaryColor)}&imageCount=${imageCount}`;
             if (imageIds.length > 0) {
                 url += `&id=${imageIds.join(',')}`;
