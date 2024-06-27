@@ -130,80 +130,89 @@
 </head>
 
 <body>
-    <div id="editorSection" class="container">
-        <h2 class="mb-4">圖片公告編輯器</h2>
-        <!-- 標題輸入框 -->
-        <div class="row mb-3">
-            <div class="col-lg-6 mb-3">
-                <label for="title" class="form-label">標題</label>
-                <input type="text" class="form-control form-control-lg" id="title">
-            </div>
-            <div class="col-lg-6">
-                <label for="date" class="form-label">日期</label>
-                <input type="date" class="form-control form-control-lg" id="date" value="">
-            </div>
-        </div>
-        <!-- 主顏色和副顏色輸入框 -->
-        <div class="row mb-3">
-            <div class="col-lg-4 mb-3">
-                <label for="primaryColor" class="form-label">主顏色</label>
-                <div class="input-group">
-                    <input type="text" class="form-control form-control-lg" id="primaryColor" placeholder="#2D3E2F">
-                    <div id="primaryColorPreview" class="color-preview"></div>
+    <div class="row">
+        <div class="col-lg-6 col-12">
+            <div id="editorSection" class="container">
+                <h2 class="mb-4">圖片公告編輯器</h2>
+                <!-- 標題輸入框 -->
+                <div class="row mb-3">
+                    <div class="col-lg-6 mb-3">
+                        <label for="title" class="form-label">標題</label>
+                        <input type="text" class="form-control form-control-lg" id="title">
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="date" class="form-label">日期</label>
+                        <input type="date" class="form-control form-control-lg" id="date" value="">
+                    </div>
+                </div>
+                <!-- 主顏色和副顏色輸入框 -->
+                <div class="row mb-3">
+                    <div class="col-lg-4 mb-3">
+                        <label for="primaryColor" class="form-label">主顏色</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" id="primaryColor" placeholder="#2D3E2F">
+                            <div id="primaryColorPreview" class="color-preview"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="secondaryColor" class="form-label">副顏色</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" id="secondaryColor" placeholder="#dfecdb">
+                            <div id="secondaryColorPreview" class="color-preview"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="imageCount" class="form-label">一列幾張圖？</label>
+                        <select class="form-control form-control-lg" id="imageCount">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 上傳圖片按鈕 -->
+                <div class="row mb-3">
+                    <div class="col-lg">
+                        <label for="upload" class="form-label">上傳圖片</label>
+                        <input type="file" class="form-control form-control-lg" id="upload" accept="image/*">
+                        <div id="imageList" class="row mt-3"></div>
+                    </div>
+                </div>
+        
+                <!-- URL拼接顯示 -->
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label for="url" class="form-label">公告網址</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-lg" id="url" readonly>
+                            <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="lineurl" class="form-label">LINE圖文網址</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
+                            <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>  
+                    </div>
+        
                 </div>
             </div>
-            <div class="col-lg-4">
-                <label for="secondaryColor" class="form-label">副顏色</label>
-                <div class="input-group">
-                    <input type="text" class="form-control form-control-lg" id="secondaryColor" placeholder="#dfecdb">
-                    <div id="secondaryColorPreview" class="color-preview"></div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <label for="imageCount" class="form-label">一列幾張圖？</label>
-                <select class="form-control form-control-lg" id="imageCount">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3" selected>3</option>
-                    <option value="4">4</option>
-                </select>
-            </div>
         </div>
-        <!-- 上傳圖片按鈕 -->
-        <div class="row mb-3">
-            <div class="col-lg">
-                <label for="upload" class="form-label">上傳圖片</label>
-                <input type="file" class="form-control form-control-lg" id="upload" accept="image/*">
-                <div id="imageList" class="row mt-3"></div>
-            </div>
-        </div>
-
-        <!-- URL拼接顯示 -->
-        <div class="row mb-3">
-            <label for="url" class="form-label">公告網址</label>
-            <div class="input-group mb-3">
-                <input type="text" class="form-control form-control-lg" id="url" readonly>
-                <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard()">
-                    <i class="fas fa-copy"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- URL拼接顯示 -->
-        <div class="row mb-3">
-            <label for="lineurl" class="form-label">LINE圖文網址</label>
-            <div class="input-group mb-3">
-                <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
-                <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
-                    <i class="fas fa-copy"></i>
-                </button>
+        <div class="col-lg-6 col-12">
+            <div id="previewSection">
+                <iframe id="previewIframe"></iframe>
             </div>
         </div>
     </div>
+    
 
-    <div id="previewSection">
-        <iframe id="previewIframe"></iframe>
-    </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
     <script>
@@ -326,7 +335,7 @@
             previewIframe.src = previewUrl;
 
             // 監聽來自 iframe 的消息
-            window.addEventListener('message', function(event) {
+            window.addEventListener('message', function (event) {
                 if (event.origin === "https://news.wentzao.com") {
                     const iframeHeight = event.data.height;
                     console.log('Iframe Height:', iframeHeight); // 調試訊息
