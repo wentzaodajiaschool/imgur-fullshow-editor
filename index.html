@@ -108,6 +108,7 @@
             width: 100%;
             border: none;
             border-radius: 15px;
+            transform-origin: top left;
         }
 
         @media (max-width: 767px) {
@@ -133,7 +134,17 @@
     <div class="row">
         <div class="col-lg-5 col-12">
             <div id="editorSection" class="container">
-                <h2 class="mb-4">圖片公告編輯器</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>圖片公告編輯器</h2>
+                    <select class="form-control form-control-lg" id="scale" style="width: auto; display: inline-block;">
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1" selected>100%</option>
+                        <option value="1.25">125%</option>
+                        <option value="1.5">150%</option>
+                        <option value="2">200%</option>
+                    </select>
+                </div>
                 <!-- 標題輸入框 -->
                 <div class="row mb-3">
                     <div class="col-lg-6 mb-3">
@@ -200,12 +211,11 @@
                             </button>
                         </div>  
                     </div>
-        
                 </div>
             </div>
         </div>
         <div class="col-lg-7 col-12">
-            <div class="container ">
+            <div class="container">
                 <h2 class="mb-4">圖片公告編輯器</h2>
                 <div id="previewSection">
                     <iframe id="previewIframe"></iframe>
@@ -213,9 +223,6 @@
             </div>
         </div>
     </div>
-    
-
-    
 
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
     <script>
@@ -234,6 +241,7 @@
             document.getElementById('primaryColor').addEventListener('input', updatePrimaryColor);
             document.getElementById('secondaryColor').addEventListener('input', updateSecondaryColor);
             document.getElementById('imageCount').addEventListener('input', updateUrl);
+            document.getElementById('scale').addEventListener('input', updateScale);
 
             updatePrimaryColor();
             updateSecondaryColor();
@@ -345,6 +353,13 @@
                     previewIframe.style.height = iframeHeight + 'px';
                 }
             });
+        }
+
+        function updateScale() {
+            const scale = document.getElementById('scale').value;
+            const previewIframe = document.getElementById('previewIframe');
+            previewIframe.style.transform = `scale(${scale})`;
+            previewIframe.style.width = `${100 / scale}%`;
         }
 
         function copyToClipboard() {
