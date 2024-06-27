@@ -141,11 +141,11 @@
                 <div class="row mb-3">
                     <div class="col-lg-6 mb-3">
                         <label for="title" class="form-label">標題</label>
-                        <input type="text" class="form-control form-control-lg" id="title">
+                        <input type="text" class="form-control form-control" id="title">
                     </div>
                     <div class="col-lg-6">
                         <label for="date" class="form-label">日期</label>
-                        <input type="date" class="form-control form-control-lg" id="date" value="">
+                        <input type="date" class="form-control form-control" id="date" value="">
                     </div>
                 </div>
                 <!-- 主顏色和副顏色輸入框 -->
@@ -153,20 +153,20 @@
                     <div class="col-lg-4 mb-3">
                         <label for="primaryColor" class="form-label">主顏色</label>
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-lg" id="primaryColor" placeholder="#2D3E2F">
+                            <input type="text" class="form-control form-control" id="primaryColor" placeholder="#2D3E2F">
                             <div id="primaryColorPreview" class="color-preview"></div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <label for="secondaryColor" class="form-label">副顏色</label>
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-lg" id="secondaryColor" placeholder="#dfecdb">
+                            <input type="text" class="form-control form-control" id="secondaryColor" placeholder="#dfecdb">
                             <div id="secondaryColorPreview" class="color-preview"></div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <label for="imageCount" class="form-label">一列幾張圖？</label>
-                        <select class="form-control form-control-lg" id="imageCount">
+                        <select class="form-control form-control" id="imageCount">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3" selected>3</option>
@@ -178,7 +178,7 @@
                 <div class="row mb-3">
                     <div class="col-lg">
                         <label for="upload" class="form-label">上傳圖片</label>
-                        <input type="file" class="form-control form-control-lg" id="upload" accept="image/*">
+                        <input type="file" class="form-control form-control" id="upload" accept="image/*">
                         <div id="imageList" class="row mt-3"></div>
                     </div>
                 </div>
@@ -188,7 +188,7 @@
                     <div class="col-lg-6">
                         <label for="url" class="form-label">公告網址</label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control form-control-lg" id="url" readonly>
+                            <input type="text" class="form-control form-control" id="url" readonly>
                             <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard()">
                                 <i class="fas fa-copy"></i>
                             </button>
@@ -197,7 +197,7 @@
                     <div class="col-lg-6">
                         <label for="lineurl" class="form-label">LINE圖文網址</label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control form-control-lg" id="lineurl" readonly>
+                            <input type="text" class="form-control form-control" id="lineurl" readonly>
                             <button type="button" class="copy-btn btn btn-primary" onclick="copyToClipboard2()">
                                 <i class="fas fa-copy"></i>
                             </button>
@@ -210,13 +210,9 @@
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>公告網頁預覽</h2>
-                    <select class="form-control form-control-lg" id="scale" style="width: auto; display: inline-block;">
-                        <option value="0.5">50%</option>
-                        <option value="0.75">75%</option>
-                        <option value="1" selected>100%</option>
-                        <option value="1.25">125%</option>
-                        <option value="1.5">150%</option>
-                        <option value="2">200%</option>
+                    <select class="form-control form-control" id="scale" style="width: auto; display: inline-block;">
+                        <option value="桌面">50%</option>
+                        <option value="手機" selected>100%</option>
                     </select>
                 </div>
                 <div id="previewSection">
