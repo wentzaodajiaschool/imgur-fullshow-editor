@@ -325,17 +325,14 @@
             const previewUrl = document.getElementById('url').value;
             previewIframe.src = previewUrl;
 
-            // 重新計算 iFrame 高度
-            previewIframe.onload = function () {
-                setIframeHeight(previewIframe);
-            };
-        }
-
-        function setIframeHeight(iframe) {
-            const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-            const iframeHeight = iframeDocument.body.scrollHeight;
-            console.log('Iframe Height:', iframeHeight); // 調試訊息
-            iframe.style.height = iframeHeight + 'px';
+            // 監聽來自 iframe 的消息
+            window.addEventListener('message', function(event) {
+                if (event.origin === "https://news.wentzao.com") {
+                    const iframeHeight = event.data.height;
+                    console.log('Iframe Height:', iframeHeight); // 調試訊息
+                    previewIframe.style.height = iframeHeight + 'px';
+                }
+            });
         }
 
         function copyToClipboard() {
