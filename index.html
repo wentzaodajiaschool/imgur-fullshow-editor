@@ -324,10 +324,16 @@
             const previewIframe = document.getElementById('previewIframe');
             const previewUrl = document.getElementById('url').value;
             previewIframe.src = previewUrl;
+
+            // 重新計算 iFrame 高度
             previewIframe.onload = function () {
-                const iframeHeight = previewIframe.contentWindow.document.body.scrollHeight;
-                previewIframe.style.height = iframeHeight + 'px';
+                setIframeHeight(previewIframe);
             };
+        }
+
+        function setIframeHeight(iframe) {
+            const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+            iframe.style.height = iframeDocument.body.scrollHeight + 'px';
         }
 
         function copyToClipboard() {
