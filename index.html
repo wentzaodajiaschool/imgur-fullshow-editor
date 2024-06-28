@@ -354,7 +354,16 @@
                     const scale = document.getElementById('scale').value;
                     console.log('Iframe Height:', iframeHeight); // 調試訊息
                     previewIframe.style.height = iframeHeight + 'px';
-                    previewSection.style.height = iframeHeight * scale + 20 + 'px';
+                    if (scale === '1') {
+                        previewSection.style.width = '50%';
+                        previewSection.style.height = (previewSection.offsetWidth * 2.1) + 'px';
+                    } else if (scale === '0.75') {
+                        previewSection.style.width = '75%';
+                        previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
+                    } else {
+                        previewSection.style.width = '100%';
+                        previewSection.style.height = (previewSection.offsetWidth * 0.5625) + 'px';
+                    }
                 }
             });
         }
@@ -363,6 +372,7 @@
             const scale = document.getElementById('scale').value;
             const previewIframe = document.getElementById('previewIframe');
             const previewSection = document.getElementById('previewSection');
+
             previewIframe.style.transform = `scale(${scale})`;
             previewIframe.style.width = `${100 / scale}%`;
 
