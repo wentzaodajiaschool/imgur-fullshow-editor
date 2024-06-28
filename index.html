@@ -355,11 +355,11 @@
                     console.log('Iframe Height:', iframeHeight); // 調試訊息
                     previewIframe.style.height = iframeHeight + 'px';
                     if (scale === '1') {
-                        // previewSection.style.width = '50%';
-                        // previewSection.style.height = (previewSection.offsetWidth * 2.1) + 'px';
-                        previewSection.style.width = '75%';
-                        previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
-                        previewSection.style.width = (previewSection.offsetHeight / 2) + 'px';
+                        previewSection.style.width = '30%';
+                        previewSection.style.height = (previewSection.offsetWidth / 2) + 'px';
+                        // previewSection.style.width = '75%';
+                        // previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
+                        // previewSection.style.width = (previewSection.offsetHeight / 2) + 'px';
                     } else if (scale === '0.75') {
                         previewSection.style.width = '75%';
                         previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
@@ -380,12 +380,12 @@
             previewIframe.style.width = `${100 / scale}%`;
 
             if (scale === '1') {
-                // previewSection.style.width = '50%';
-                // previewSection.style.height = (previewSection.offsetWidth * 2.1) + 'px';
+                previewSection.style.width = '30%';
+                previewSection.style.height = (previewSection.offsetWidth * 2) + 'px';
 
-                previewSection.style.width = '75%';
-                previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
-                previewSection.style.width = (previewSection.offsetHeight / 2) + 'px';
+                // previewSection.style.width = '75%';
+                // previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
+                // previewSection.style.width = (previewSection.offsetHeight / 2) + 'px';
 
             } else if (scale === '0.75') {
                 previewSection.style.width = '75%';
