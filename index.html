@@ -24,7 +24,9 @@
             font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
             padding: 10px;
             background-color: #f8f9fa;
-            overflow:hidden;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
         }
 
         /* 容器最大寬度設置 */
@@ -114,23 +116,96 @@
 
         /* 預覽區域樣式 */
         #previewSection {
-            width: 50%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             margin-top: 20px;
-            overflow-y: hidden; /* 添加垂直滾動條 */
-            overflow-x: hidden; /* 隱藏水平滾動條 */
+            height: calc(100vh - 150px);
+            overflow: hidden;
+        }
+
+        /* 設備模擬器容器 */
+        .device-simulator {
+            position: relative;
+            background: #333;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* 手機模擬器 */
+        .device-simulator.mobile {
+            width: 390px;
+            height: 844px;
+            border-radius: 30px;
+            padding: 30px 15px;
+        }
+
+        /* 平板模擬器 */
+        .device-simulator.tablet {
+            width: 820px;
+            height: 1180px;
+            border-radius: 25px;
+            padding: 25px;
+        }
+
+        /* 桌機模擬器 */
+        .device-simulator.desktop {
+            width: 1000px;
+            height: 700px;
+            border-radius: 10px;
+            padding: 10px;
+            background: #222;
+        }
+
+        /* 設備螢幕 */
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .device-screen.mobile {
+            border-radius: 20px;
+        }
+
+        .device-screen.tablet {
+            border-radius: 15px;
+        }
+
+        .device-screen.desktop {
+            border-radius: 5px;
         }
 
         /* 預覽iframe樣式 */
         #previewIframe {
             width: 100%;
+            height: 100%;
             border: none;
+            display: block;
+        }
+
+        /* 設備標籤 */
+        .device-label {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 15px;
             border-radius: 15px;
-            transform-origin: top left;
-            overflow-y: auto; /* 添加垂直滾動條 */
-            overflow-x: hidden; /* 隱藏水平滾動條 */
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* 縮放容器以適應視窗 */
+        .preview-container {
+            transform-origin: top center;
+            transition: transform 0.3s ease;
         }
 
         /* 圖片列表樣式 */
@@ -165,6 +240,10 @@
             overflow-y: auto;  /* 內容超出時顯示滾動條 */
         }
 
+        .col-scrollable.right-column {
+            overflow: hidden;  /* 右側欄位隱藏滾動條 */
+        }
+
         /* 響應式設計 */
         @media (max-width: 767px) {
             .container {
@@ -186,7 +265,7 @@
 </head>
 <body>
     <!-- 主要內容區域 -->
-    <div class="row">
+    <div class="row" style="height: 100vh; margin: 0;">
         <!-- 編輯器區域 -->
         <div id="left-column" class="col-lg-4 col-12 col-scrollable" style="overflow: auto;">
             <div id="editorSection" class="container">
@@ -279,7 +358,7 @@
             </div>
         </div>
         <!-- 預覽區域 -->
-        <div id="right-column" class="col-lg-8 col-12 col-scrollable" style="overflow: auto;">
+        <div id="right-column" class="col-lg-8 col-12 col-scrollable right-column">
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <!-- 左側元素 -->
@@ -298,7 +377,14 @@
                     </div>
                 </div>
                 <div id="previewSection">
-                    <iframe id="previewIframe"></iframe>
+                    <div class="preview-container" id="previewContainer">
+                        <div class="device-simulator mobile" id="deviceSimulator">
+                            <div class="device-label" id="deviceLabel">iPhone 14 Pro (390×844)</div>
+                            <div class="device-screen mobile" id="deviceScreen">
+                                <iframe id="previewIframe"></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -468,68 +554,51 @@
         // 更新預覽
         function updatePreview() {
             const previewIframe = document.getElementById('previewIframe');
-            const previewSection = document.getElementById('previewSection');
             const previewUrl = document.getElementById('url').value;
-            previewIframe.src = previewUrl;
-
-            // 監聽來自iframe的消息
-            window.addEventListener('message', function(event) {
-                if (event.origin === "https://news.wentzao.com") {
-                    const iframeHeight = event.data.height;
-                    const scale = document.getElementById('scale').value;
-                    previewIframe.style.height = iframeHeight + 'px';
-                    // 根據選擇的設備類型調整預覽區域大小
-                    if (scale === '1') {
-                        previewSection.style.width = '75%';
-                        previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
-                        previewSection.style.width = (previewSection.offsetHeight / 2) + 'px';
-
-                    } else if (scale === '0.75') {
-                        previewSection.style.width = '75%';
-                        previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
-                    } else {
-                        previewSection.style.width = '100%';
-                        previewSection.style.height = (previewSection.offsetWidth * 0.5625) + 'px';
-                    }
-                }
-            });
+            
+            // 只有當URL發生變化時才更新iframe的src
+            if (previewIframe.src !== previewUrl) {
+                previewIframe.src = previewUrl;
+            }
         }
 
         // 更新預覽縮放比例
         function updateScale() {
             const scale = document.getElementById('scale').value;
-            const previewIframe = document.getElementById('previewIframe');
-            const previewSection = document.getElementById('previewSection');
+            const deviceSimulator = document.getElementById('deviceSimulator');
+            const deviceScreen = document.getElementById('deviceScreen');
+            const deviceLabel = document.getElementById('deviceLabel');
+            const previewContainer = document.getElementById('previewContainer');
+            
+            // 移除所有設備類別
+            deviceSimulator.className = 'device-simulator';
+            deviceScreen.className = 'device-screen';
+            
+            let containerScale = 1;
+            
             if (scale === '1') {
-                previewIframe.style.transform = `scale(0.5)`;
-                previewIframe.style.width = `${100 / 0.5}%`;
-                previewIframe.style.height = `${100 / 0.5}%`;
+                // 手機模擬器
+                deviceSimulator.classList.add('mobile');
+                deviceScreen.classList.add('mobile');
+                deviceLabel.textContent = 'iPhone 14 Pro (390×844)';
+                containerScale = 0.6; // 縮小以適應視窗
             } else if (scale === '0.75') {
-                previewIframe.style.transform = `scale(0.75)`;
-                previewIframe.style.width = `${100 / scale}%`;
-                previewIframe.style.height = `${100 / scale}%`;
-
+                // 平板模擬器
+                deviceSimulator.classList.add('tablet');
+                deviceScreen.classList.add('tablet');
+                deviceLabel.textContent = 'iPad Pro (820×1180)';
+                containerScale = 0.4; // 縮小以適應視窗
             } else {
-                previewIframe.style.transform = `scale(${scale})`;
-                previewIframe.style.width = `${100 / scale}%`;
-                previewIframe.style.height = `${100 / scale}%`;
+                // 桌機模擬器
+                deviceSimulator.classList.add('desktop');
+                deviceScreen.classList.add('desktop');
+                deviceLabel.textContent = 'Desktop (1000×700)';
+                containerScale = 0.6; // 縮小以適應視窗
             }
-            // previewIframe.style.transform = `scale(${scale})`;
-
-
-            // 根據選擇的設備類型調整預覽區域大小
-            if (scale === '1') {
-                previewSection.style.width = '75%';
-                previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
-                previewSection.style.width = (previewSection.offsetHeight / 4) + 'px';
-            } else if (scale === '0.75') {
-                previewSection.style.width = '75%';
-                previewSection.style.height = (previewSection.offsetWidth * 0.75) + 'px';
-            } else {
-                previewSection.style.width = '100%';
-                previewSection.style.height = (previewSection.offsetWidth * 0.5625) + 'px';
-            }
-
+            
+            // 應用容器縮放
+            previewContainer.style.transform = `scale(${containerScale})`;
+            
             updatePreview();
         }
 
