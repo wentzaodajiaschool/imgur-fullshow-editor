@@ -101,11 +101,11 @@
 
         /* 主色和副色預覽樣式 */
         #primaryColorPreview {
-            background-color: #2D3E2F;
+            background-color: #02a568;
         }
 
         #secondaryColorPreview {
-            background-color: #DFECDB;
+            background-color: #e6f7f0;
         }
 
         /* 編輯器區域樣式 */
@@ -288,14 +288,14 @@
                     <div class="col-lg-4 mb-3">
                         <label for="primaryColor" class="form-label">主顏色</label>
                         <div class="input-group">
-                            <input type="text" class="form-control form-control" id="primaryColor" placeholder="#2D3E2F">
+                            <input type="text" class="form-control form-control" id="primaryColor" placeholder="#02a568">
                             <div id="primaryColorPreview" class="color-preview"></div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <label for="secondaryColor" class="form-label">副顏色</label>
                         <div class="input-group">
-                            <input type="text" class="form-control form-control" id="secondaryColor" placeholder="#dfecdb">
+                            <input type="text" class="form-control form-control" id="secondaryColor" placeholder="#e6f7f0">
                             <div id="secondaryColorPreview" class="color-preview"></div>
                         </div>
                     </div>
@@ -435,7 +435,7 @@
         // 存儲上傳圖片的ID
         let imageIds = [];
 
-        // 上傳圖片到Imgur
+        // 上傳圖片到Imgur (透過 Cloudflare Worker 代理)
         function uploadImageToImgur(file) {
             // 創建並顯示上傳狀態元素
             const saveStatus = document.createElement('div');
@@ -445,17 +445,22 @@
 
             // Imgur API客戶端ID
             const clientId = "a0a92307b538c2f";
-            const formData = new FormData();
-            formData.append("image", file);
 
-            // 發送POST請求到Imgur API
-            fetch("https://api.imgur.com/3/image", {
-                method: "POST",
-                headers: {
-                    Authorization: "Client-ID " + clientId,
-                },
-                body: formData,
-            })
+            // 將圖片轉換為 Base64
+            fileToBase64(file)
+                .then((base64) => {
+                    return fetch("https://imgurproxy.dreamdomroy.workers.dev/", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            image: base64,
+                            clientId: clientId
+                        }),
+                        muteHttpExceptions: true,
+                    });
+                })
                 .then(response => response.json())
                 .then(result => {
                     if (result.success) {
@@ -484,7 +489,7 @@
                         imgContainer.appendChild(deleteBtn);
                         document.getElementById('imageList').appendChild(imgContainer);
                     } else {
-                        alert("圖片上傳失敗，請重試！");
+                        alert("圖片上傳失敗，請重試！錯誤: " + (result.error || "未知錯誤"));
                     }
                     saveStatus.remove();
                     updateUrl();
@@ -492,11 +497,25 @@
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    saveStatus.innerHTML = "上傳失敗";
+                    saveStatus.innerHTML = "上傳失敗: " + error.message;
                 })
                 .finally(() =>{
                     updateScale();
                 });
+        }
+
+        // 將檔案轉換為 Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    // 移除 data:image/jpeg;base64, 前綴，只保留 base64 字符串
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = error => reject(error);
+            });
         }
 
         // 更新圖片順序
@@ -534,8 +553,8 @@
         function updateUrl() {
             const title = document.getElementById('title').value;
             const date = document.getElementById('date').value.replace(/-/g, '');
-            const primaryColor = document.getElementById('primaryColor').value || '#2D3E2F';
-            const secondaryColor = document.getElementById('secondaryColor').value || '#dfecdb';
+            const primaryColor = document.getElementById('primaryColor').value || '#02a568';
+            const secondaryColor = document.getElementById('secondaryColor').value || '#e6f7f0';
             const imageCount = document.getElementById('imageCount').value;
 
             // 構建URL參數
