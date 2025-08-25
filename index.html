@@ -314,6 +314,18 @@
                     <div class="col-lg">
                         <label for="upload" class="form-label">上傳圖片（可多選）</label>
                         <input type="file" class="form-control form-control" id="upload" accept="image/*" multiple>
+                        
+                        <!-- 圖片網址輸入區 -->
+                        <div class="mt-3">
+                            <label for="imageUrl" class="form-label">或直接貼上圖片網址</label>
+                            <div class="input-group">
+                                <input type="url" class="form-control" id="imageUrl" placeholder="https://example.com/image.jpg">
+                                <button type="button" class="btn btn-primary" onclick="addImageFromUrl()">
+                                    <i class="fas fa-plus"></i> 新增
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div id="imageList" class="row mt-3"></div>
                     </div>
                 </div>
@@ -415,6 +427,14 @@
             document.getElementById('secondaryColor').addEventListener('input', updateSecondaryColor);
             document.getElementById('imageCount').addEventListener('input', updateUrl);
             document.getElementById('scale').addEventListener('input', updateScale);
+            
+            // 為圖片網址輸入框添加 Enter 鍵支援
+            document.getElementById('imageUrl').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    addImageFromUrl();
+                }
+            });
 
             // 初始化顏色預覽
             updatePrimaryColor();
@@ -518,6 +538,99 @@
             });
         }
 
+        // 從圖片網址新增圖片
+        function addImageFromUrl() {
+            const urlInput = document.getElementById('imageUrl');
+            const imageUrl = urlInput.value.trim();
+            
+            // 驗證網址
+            if (!imageUrl) {
+                alert('請輸入圖片網址');
+                return;
+            }
+            
+            // 簡單的URL格式驗證
+            try {
+                new URL(imageUrl);
+            } catch (e) {
+                alert('請輸入有效的網址格式');
+                return;
+            }
+            
+            // 驗證是否為圖片網址
+            if (!isImageUrl(imageUrl)) {
+                alert('請輸入有效的圖片網址（支援 .jpg, .jpeg, .png, .gif, .webp, .bmp, .svg）');
+                return;
+            }
+            
+            // 創建並顯示載入狀態
+            const saveStatus = document.createElement('div');
+            saveStatus.classList.add('saveStatus');
+            saveStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 載入圖片中...';
+            document.getElementById('imageList').appendChild(saveStatus);
+            
+            // 測試圖片是否可以載入
+            const testImg = new Image();
+            testImg.crossOrigin = "anonymous";
+            
+            testImg.onload = function() {
+                // 圖片載入成功，新增到列表
+                const imgContainer = document.createElement('div');
+                imgContainer.classList.add('img-container', 'col-12', 'col-lg-4', 'col-md-6');
+                imgContainer.dataset.imageId = imageUrl; // 直接使用完整URL作為ID
+                
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.classList.add('image-preview');
+                
+                // 創建刪除按鈕
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.onclick = () => {
+                    const index = imageIds.indexOf(imageUrl);
+                    if (index > -1) {
+                        imageIds.splice(index, 1);
+                    }
+                    imgContainer.remove();
+                    updateUrl();
+                };
+                
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(deleteBtn);
+                document.getElementById('imageList').appendChild(imgContainer);
+                
+                // 新增到圖片ID陣列（現在支援完整URL）
+                imageIds.push(imageUrl);
+                
+                // 清空輸入框
+                urlInput.value = '';
+                
+                // 移除載入狀態並更新
+                saveStatus.remove();
+                updateUrl();
+                updateScale();
+            };
+            
+            testImg.onerror = function() {
+                // 圖片載入失敗
+                alert('無法載入此圖片，請檢查網址是否正確');
+                saveStatus.remove();
+            };
+            
+            // 開始載入圖片
+            testImg.src = imageUrl;
+        }
+        
+        // 驗證是否為圖片網址
+        function isImageUrl(url) {
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+            const lowerUrl = url.toLowerCase();
+            return imageExtensions.some(ext => lowerUrl.includes(ext)) || 
+                   lowerUrl.includes('imgur.com') || 
+                   lowerUrl.includes('i.imgur.com');
+        }
+
         // 更新圖片順序
         function updateImageOrder() {
             imageIds = Array.from(document.getElementById('imageList').children)
@@ -560,7 +673,16 @@
             // 構建URL參數
             let url = `title=${encodeURIComponent(title)}&date=${date}&primaryColor=${encodeURIComponent(primaryColor)}&secondaryColor=${encodeURIComponent(secondaryColor)}&imageCount=${imageCount}`;
             if (imageIds.length > 0) {
-                url += `&id=${imageIds.join(',')}`;
+                // 處理混合的圖片來源：Imgur ID 和完整 URL
+                const encodedImageIds = imageIds.map(id => {
+                    // 如果是完整 URL（以 http 開頭），則進行編碼
+                    if (id.startsWith('http')) {
+                        return encodeURIComponent(id);
+                    }
+                    // 如果是 Imgur ID，保持原樣
+                    return id;
+                });
+                url += `&id=${encodedImageIds.join(',')}`;
             }
             // 壓縮URL
             const compressedUrl = LZString.compressToEncodedURIComponent(url);
@@ -660,10 +782,32 @@
             // 解碼圖片 ID
             const imageIdsDecoded = params.get('id');
             if (imageIdsDecoded) {
-                imageIds = imageIdsDecoded.split(',');
+                const rawImageIds = imageIdsDecoded.split(',');
+                imageIds = rawImageIds.map(id => {
+                    // 如果是編碼過的 URL，進行解碼
+                    if (id.includes('%')) {
+                        try {
+                            const decodedId = decodeURIComponent(id);
+                            // 如果解碼後是完整 URL，返回解碼後的結果
+                            if (decodedId.startsWith('http')) {
+                                return decodedId;
+                            }
+                        } catch (e) {
+                            // 解碼失敗，可能不是編碼的 URL
+                        }
+                    }
+                    // 其他情況返回原始 ID
+                    return id;
+                });
+                
                 imageIds.forEach(id => {
-                    // 需要實現從 Imgur 加載圖片並顯示在頁面上的功能
-                    fetchImageFromImgur(id);
+                    if (id.startsWith('http')) {
+                        // 完整 URL，直接載入
+                        fetchImageFromUrl(id);
+                    } else {
+                        // Imgur ID，使用現有函數
+                        fetchImageFromImgur(id);
+                    }
                 });
             }
 
@@ -721,6 +865,39 @@
                 updateUrl();
                 updatePreview();  // 確保更新預覽，無論加載成功或失敗
             });
+        }
+
+        // 從完整 URL 載入圖片
+        function fetchImageFromUrl(imageUrl) {
+            const imgContainer = document.createElement('div');
+            imgContainer.classList.add('img-container', 'col-12', 'col-lg-4', 'col-md-6');
+            imgContainer.dataset.imageId = imageUrl;
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.classList.add('image-preview');
+
+            // 創建刪除按鈕
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+            deleteBtn.onclick = () => {
+                imgContainer.remove();  // 移除圖片容器
+                const index = imageIds.indexOf(imageUrl);
+                if (index > -1) {
+                    imageIds.splice(index, 1);  // 移除圖片ID
+                }
+                updateUrl();  // 更新 URL
+                updatePreview();  // 更新預覽
+            };
+
+            // 將圖片和刪除按鈕添加到容器中
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(deleteBtn);
+            document.getElementById('imageList').appendChild(imgContainer);
+
+            updateUrl();
+            updatePreview();
         }
     </script>
     <!-- <script src=script.js></script> -->
